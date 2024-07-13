@@ -91,7 +91,7 @@ namespace QP {
 			
 
 		// Resolve constraints
-		for(int i = 0; i < 25; ++i)
+		for(int i = 0; i < 2500; ++i)
 			for(const auto& constraint : constraints)
 				resolveConstraint(constraint.first, constraint.second);
 	}

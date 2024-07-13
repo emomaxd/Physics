@@ -14,13 +14,17 @@ namespace QP {
     }
 
     void RopeConstraint::satisfy() {
-        Vec2 delta = p2->position - p1->position;
-        float deltaLength = delta.length();
-        float diff = (deltaLength - restLength) / deltaLength;
+        for (int i = 0; i < 2500; ++i) {
 
-        Vec2 correction = delta * 0.5f * diff;
-        p1->position += correction;
-        p2->position = p2->position - correction;
+        
+            Vec2 delta = p2->position - p1->position;
+            float deltaLength = delta.length();
+            float diff = (deltaLength - restLength) / deltaLength;
+
+            Vec2 correction = delta * 0.5f * diff;
+            p1->position += correction;
+            p2->position = p2->position - correction;
+        }
     }
 
 
