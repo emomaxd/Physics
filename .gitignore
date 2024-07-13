@@ -1,0 +1,17 @@
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.cmake
+*.sln
+
+x64/
+
+CMakeFiles/
+CMakeCache.txt
+
+.vs/
+
+demo.dir
+Physics.dir
+
+Debug
