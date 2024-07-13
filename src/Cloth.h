@@ -1,44 +1,49 @@
+/// Verlet integration cloth simulation
+
 #pragma once
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 #include "Vector.h"
+#include "Timestep.h"
 
 namespace QP {
 
 
 
     class Particle {
+    public: 
+        Particle(float x, float y);
+
+        void applyForce(const Vec2& force);
+        void update(float ts);
+
     public:
-        Vec3 position;
-        Vec3 previousPosition;
-        Vec3 acceleration;
-        float mass;
-        bool movable;
+        Vec2 position;
+        Vec2 oldPosition;
+        Vec2 acceleration;
+        bool isStatic{false};
 
-        Particle(const Vec3& pos, float mass);
-        Particle() = default;
-
-        void applyForce(const Vec3& force);
-        void update(float deltaTime);
     };
 
     class Cloth {
     public:
-        Particle** particles;
-        int width;
-        int height;
-        float restDistance;
+        Cloth(size_t width, size_t height);
+        
+        void applyGravity();
+        void update(float ts);
 
-        Cloth(int width, int height, float restDistance, float particleMass);
-        ~Cloth();
-
-        void applyGravity(const Vec3& gravity);
-        void applyWind(const Vec3& wind);
-        void update(float deltaTime);
-        void addConstraint(int x1, int y1, int x2, int y2);
-        void satisfyConstraints();
+        void applyForce(const Vec2& force);
+        void applyMouseForce(const Vec2& force);
+        
+        void resolveConstraint(int a, int b);
+    
+    public:
+	std::vector<Particle> particles;
+	std::vector<std::pair<int, int>> constraints;
+    size_t width, height;
     };
 
 } // namespace QP

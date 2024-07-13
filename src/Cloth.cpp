@@ -2,91 +2,115 @@
 
 namespace QP {
 
-    
-    // Particle implementation
-    Particle::Particle(const Vec3& pos, float mass)
-        : position(pos), previousPosition(pos), acceleration(0.0f, 0.0f, 0.0f), mass(mass), movable(true) {}
 
-    void Particle::applyForce(const Vec3& force) {
-        acceleration += force * (1.0f / mass);
-    }
+	Particle::Particle(float x, float y) {
+		position = { x, y };
+		oldPosition = { x, y };
+		acceleration = { 0, 0 };
+		isStatic = false;
+	}
 
-    void Particle::update(float deltaTime) {
-        if (movable) {
-            Vec3 temp = position;
-            position += (position - previousPosition) + acceleration * (deltaTime * deltaTime);
-            previousPosition = temp;
-            acceleration = Vec3(0.0f, 0.0f, 0.0f);
-        }
-    }
+	void Particle::applyForce(const Vec2& force) {
+		if (isStatic) return;
+		acceleration += force;
+	}
 
-    // Cloth implementation
-    Cloth::Cloth(int width, int height, float restDistance, float particleMass)
-        : width(width), height(height), restDistance(restDistance) {
-        particles = new Particle * [height];
-        for (int y = 0; y < height; ++y) {
-            particles[y] = new Particle[width];
-            for (int x = 0; x < width; ++x) {
-                particles[y][x] = Particle(Vec3(x * restDistance, y * restDistance, 0.0f), particleMass);
-            }
-        }
-        particles[0][0].movable = false;
-        particles[0][width - 1].movable = false;
-    }
+	void Particle::update(float deltaTime) {
+		if (isStatic) return;
 
-    Cloth::~Cloth() {
-        for (int y = 0; y < height; ++y) {
-            delete[] particles[y];
-        }
-        delete[] particles;
-    }
+		Vec2 temp = position;
+		Vec2 velocity = position - oldPosition;
 
-    void Cloth::applyGravity(const Vec3& gravity) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                if (particles[y][x].movable) {
-                    particles[y][x].applyForce(gravity * particles[y][x].mass);
-                }
-            }
-        }
-    }
+		// Verlet integration
+		position += velocity + acceleration * deltaTime * deltaTime;
+		oldPosition = temp;
 
-    void Cloth::applyWind(const Vec3& wind) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                particles[y][x].applyForce(wind);
-            }
-        }
-    }
+		acceleration = { 0, 0 }; // Reset acceleration
+	}
 
-    void Cloth::update(float deltaTime) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                particles[y][x].update(deltaTime);
-            }
-        }
-        satisfyConstraints();
-    }
 
-    void Cloth::addConstraint(int x1, int y1, int x2, int y2) {
-        // This method is intentionally left empty for simplicity.
-        // Implement constraints as per your requirements.
-    }
 
-    void Cloth::satisfyConstraints() {
-        for (int y = 0; y < height - 1; ++y) {
-            for (int x = 0; x < width - 1; ++x) {
-                Vec3 diff = particles[y][x].position - particles[y + 1][x + 1].position;
-                float currentDistance = diff.length();
-                Vec3 correctionVector = diff * (1.0f - restDistance / currentDistance) * 0.5f;
-                if (particles[y][x].movable) {
-                    particles[y][x].position = particles[y][x].position - correctionVector;
-                }
-                if (particles[y + 1][x + 1].movable) {
-                    particles[y + 1][x + 1].position += correctionVector;
-                }
-            }
-        }
-    }
+
+
+
+
+
+  
+	Cloth::Cloth(size_t width, size_t height) : width(width), height(height)
+	{
+		/// Create particles
+		for(size_t y = 0; y < height; ++y)
+			for(size_t x = 0; x < width; ++x)
+				particles.emplace_back(x * 0.1f, y * 0.1f);
+		
+		for(size_t y = 0; y < height; ++y)
+			for(size_t x = 0; x < width; ++x){
+				if(x < width - 1)
+					constraints.emplace_back(y * width + x, y * width + (x + 1));
+				if(y < height - 1)
+					constraints.emplace_back(y * width + x, (y + 1) * width + x);
+			}
+
+		particles[0].isStatic = true;
+		particles[width - 1].isStatic = true;
+	}
+
+	void Cloth::applyGravity()
+	{
+		Vec2 gravity = {0.0f, -9.81f};
+		for (auto& particle : particles)
+		{
+			if (particle.isStatic) continue;
+			particle.applyForce(gravity);
+
+		}
+			
+	}
+
+	void Cloth::applyForce(const Vec2& force)
+	{
+		for (auto& particle : particles)
+			particle.applyForce(force);
+	}
+
+	void Cloth::applyMouseForce(const Vec2& force)
+	{
+		for (auto& particle : particles)
+		{
+			Vec2 dir = force - particle.position;
+			particle.applyForce(dir);
+		}
+			
+	}
+
+	void Cloth::update(float ts)
+	{
+		applyGravity();
+		for (auto& particle : particles)
+			particle.update(ts);
+			
+
+		// Resolve constraints
+		for(int i = 0; i < 25; ++i)
+			for(const auto& constraint : constraints)
+				resolveConstraint(constraint.first, constraint.second);
+	}
+
+	void Cloth::resolveConstraint(int a, int b)
+	{
+		Vec2 delta = particles[b].position - particles[a].position;
+		float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+		float restLength = 0.1f;
+
+		if(distance != restLength)
+		{
+			float diff = (distance - restLength) / distance;
+			Vec2 correction = delta * 0.5f * diff;
+
+			if(!particles[a].isStatic)particles[a].position += correction;
+			if(!particles[b].isStatic)particles[b].position -= correction;
+		}
+	}
+
 
 } // namespace QP

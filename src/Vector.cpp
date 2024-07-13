@@ -44,6 +44,14 @@ namespace QP {
         return *this;
     }
 
+    Vec3& Vec3::operator-=(const Vec3& other) {
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
+        return *this;
+    }
+
+	
     Vec3 Vec3::operator-(const Vec3& other) const {
         return Vec3(x - other.x, y - other.y, z - other.z);
     }
@@ -106,6 +114,12 @@ namespace QP {
     Vec2& Vec2::operator+=(const Vec2& other) {
         x += other.x;
         y += other.y;
+        return *this;
+    }
+
+    Vec2& Vec2::operator-=(const Vec2& other) {
+        x -= other.x;
+        y -= other.y;
         return *this;
     }
 
