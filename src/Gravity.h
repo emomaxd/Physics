@@ -7,22 +7,24 @@
 
 namespace QP {
 
-	struct Particle{
+	struct GravityParticle{
 		Vec3 position;
 		Vec3 acceleration;
 		Vec3 velocity;
 		float mass;
 	};
 
-	void ApplyForce(Particle& particle, const Vec3& force);
+	void ApplyForce(GravityParticle& particle, const Vec3& force);
 
-	void UpdateParticle(Particle& particle, Timestep ts);
+	void UpdateParticle(GravityParticle& particle, float ts);
 
 	struct Gravity{
-		std::vector<Particle*> particles;
+		std::vector<GravityParticle> particles;
 	};
 
-	void UpdateGravity(const Gravity& sim, Timestep ts);
+	void InitializeParticles(Gravity& sim, int count, float range);
+
+	void UpdateGravity(Gravity& sim, float ts);
 
 }
 
