@@ -19,9 +19,10 @@ namespace QP {
         Vec3& operator=(Vec3&& other) noexcept;
         Vec3 operator+(const Vec3& other) const;
         Vec3& operator+=(const Vec3& other);
-	Vec3& operator-=(const Vec3& other);
+		Vec3& operator-=(const Vec3& other);
         Vec3 operator-(const Vec3& other) const;
         Vec3 operator*(float scalar) const;
+        Vec3 operator/(float scalar) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Vec3& vec);
 
@@ -46,11 +47,15 @@ namespace QP {
         Vec2 operator-(const Vec2& other) const;
         Vec2 operator*(float scalar) const;
         Vec2& operator+=(const Vec2& other);
-	Vec2& operator-=(const Vec2& other);
+		Vec2& operator-=(const Vec2& other);
         Vec2& operator*=(float scalar);
         float length() const;
         Vec2 normalized() const;
     };
 
+
+    void normalize(Vec2& vec);
+    float dot(const Vec2& a, const Vec2& b);
+    Vec2 cross(const Vec2& a, const Vec2& b);
 
 } // Namespace QP

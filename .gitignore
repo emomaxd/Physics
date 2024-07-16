@@ -4,6 +4,8 @@
 *.cmake
 *.sln
 
+*.swp
+
 x64/
 
 CMakeFiles/
