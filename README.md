@@ -2,12 +2,15 @@
 
 ## Overview
 
-Physics is a project aimed at building a comprehensive physics core from the ground up. The goal is to implement fundamental physics concepts and provide a solid foundation for simulating various physical phenomena in real-time applications, including games and simulations.
+The ultime goal is to implement various physics simulations as parallel. Planned to use CUDA!
 
-To check the result visually see [Physim](https://github.com/EmomaxD/Physim).
+To see the result visually check [Physim](https://github.com/emomaxd/Physim).
 
-## Features
+## Features to come
 
 - **Double Pendulum Simulation**
 - **Cloth Simulation**
 - **Rope Simulation**
+- **Gravity Simulation**
+- **Collision Simulation**
+- **Fluid Simulation**
