@@ -6,6 +6,10 @@
 
 *.swp
 
+*.out
+*Makefile
+*.a
+
 x64/
 
 CMakeFiles/

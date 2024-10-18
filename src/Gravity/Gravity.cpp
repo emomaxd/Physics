@@ -31,7 +31,7 @@ namespace QP {
 
 	void InitializeParticles(Gravity& sim, int count, float range) {
 		sim.particles.resize(count);
-		std::srand(static_cast<unsigned int>(std::time(nullptr)));
+		//std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
 		for (int i = 0; i < count; ++i) {
 			GravityParticle particle;

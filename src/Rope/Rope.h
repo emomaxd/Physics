@@ -52,7 +52,7 @@ namespace QP {
 
         void applyForce(const Vec2& force);
 
-        void Rope::applyMouseForce(const Vec2& mousePos);
+        void applyMouseForce(const Vec2& mousePos);
 
         void update(float dt);
     
